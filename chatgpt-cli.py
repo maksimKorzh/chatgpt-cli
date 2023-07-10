@@ -4,6 +4,7 @@
 import openai
 import os, time
 from pygments import highlight
+from pygments.lexers import guess_lexer
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import TerminalFormatter
 from pygments.token import Keyword, Name, Comment, String, Error, Number, Operator, Generic, Token, Whitespace
@@ -35,8 +36,9 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 messages=[{'role': 'system', 'content': 'You are a helpful assistant.'}]
 
 # syntax highlighting
-def colorize_code(code, language):
-  lexer = get_lexer_by_name(language)
+def colorize_code(code):
+  lexer = guess_lexer(code)
+  print('\n\nGUESSED', lexer.name)
   formatter = TerminalFormatter(bg='dark', colorscheme=COLOR_SCHEME)
   return highlight(code, lexer, formatter)
 
@@ -82,12 +84,11 @@ while True:
       emulate_typing(parse_answer[0].strip()[:-1])
       for chunk in parse_answer:
         if len(chunk.split('\n')[0]):
-          language = chunk.split('\n')[0],
           code = '\n'.join(chunk.split('\n')[1:])
-          highlight_code = colorize_code(code, 'python')
+          highlight_code = colorize_code(code)
           if code != "    \n    ": emulate_typing(highlight_code.strip())
         else: emulate_typing('\n' + chunk.strip())
     else: emulate_typing(answer.strip())
 
   # more that 3 requests per minute are not allowed
-  except: print(colorama.Fore.YELLOW + "ChatGPT: I'm busy, only 3 request per minute are allowed for free accounts, please your question again in 20 seconds" + colorama.Style.RESET_ALL)
+  except: print(colorama.Fore.YELLOW + "ChatGPT: I'm busy, only 3 request per minute are allowed for free accounts, please ask your question again in 20 seconds" + colorama.Style.RESET_ALL)
