@@ -38,7 +38,6 @@ messages=[{'role': 'system', 'content': 'You are a helpful assistant.'}]
 # syntax highlighting
 def colorize_code(code):
   lexer = guess_lexer(code)
-  print('\n\nGUESSED', lexer.name)
   formatter = TerminalFormatter(bg='dark', colorscheme=COLOR_SCHEME)
   return highlight(code, lexer, formatter)
 
